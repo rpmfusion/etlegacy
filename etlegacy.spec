@@ -11,9 +11,11 @@
 %global gitver %{version}
 %endif
 
+%global __provides_exclude_from ^%{_libdir}/%{name}/.*\\.so$
+
 Name:           etlegacy
-Version:        2.80.2
-Release:        3%{?snapinfo:.%{snapinfo}}%{?dist}
+Version:        2.81.0
+Release:        1%{?snapinfo:.%{snapinfo}}%{?dist}
 Summary:        Fully compatible client and server for the game Wolfenstein: Enemy Territory
 
 License:        GPLv3
@@ -25,11 +27,9 @@ Source2:        https://raw.githubusercontent.com/pemensik/etlegacy-tools/instal
 Source3:        https://raw.githubusercontent.com/pemensik/etlegacy-tools/installer/linux/etl-installer
 Source4:        com.etlegacy.ETLegacy.installer.desktop
 
-# https://github.com/etlegacy/etlegacy/pull/1649
-Patch1:         etlegacy-2.77.1-aarch64.patch
-# https://github.com/etlegacy/etlegacy/commit/5935e4e52d8c7c69201ca3ce448170d7dece2fe5
-# https://github.com/etlegacy/etlegacy/issues/2158
-Patch2:         etlegacy-2.80-sdl-splash-screen.patch
+Patch1:         etlegacy-2.81-bin-arch.patch
+# https://github.com/etlegacy/etlegacy/pull/2289
+Patch2:         etlegacy-2.81-cjson-devel.patch
 
 BuildRequires:  gcc gcc-c++
 BuildRequires:  cmake
@@ -37,11 +37,17 @@ BuildRequires:  libpng-devel freetype-devel SDL2-devel curl-devel openssl-devel 
 BuildRequires:  libtheora-devel libogg-devel libvorbis-devel libjpeg-turbo-devel
 BuildRequires:  glew-devel
 BuildRequires:  lua-devel
-BuildRequires:  openal-soft-devel minizip-devel
+BuildRequires:  openal-soft-devel
 BuildRequires:  desktop-file-utils
 BuildRequires:  libappstream-glib
 BuildRequires:  systemd-rpm-macros
 BuildRequires:  sed
+BuildRequires:  cjson-devel
+%if 0%{fedora} > 37
+BuildRequires:  minizip-ng-devel
+%else
+BuildRequires:  minizip-devel
+%endif
 
 Requires:       shared-mime-info
 # Can be produced by game-data-packager enemy-territory
@@ -77,17 +83,15 @@ the original game. Can be removed after game data installation.
 # Use system flags for all products
 sed -e 's,^\s*SET(CMAKE_BUILD_TYPE "Release"),# &,' -i cmake/ETLCommon.cmake
 
+mv misc/com.etlegacy.ETLegacy{.x86_64,}.desktop
+
 %build
 %cmake -DBUNDLED_LIBS=OFF -DCROSS_COMPILE32=OFF -DBUILD_MOD=ON \
        -DCLIENT_GLVND=ON \
-       -DFEATURE_RENDERER2=ON -DINSTALL_DEFAULT_BASEDIR=%{_libdir}/%{name} \
+       -DFEATURE_RENDERER2=OFF -DINSTALL_DEFAULT_BASEDIR=%{_libdir}/%{name} \
        -DINSTALL_DEFAULT_MODDIR=%{_libdir}/%{name} \
        -DFEATURE_AUTOUPDATE=OFF -DINSTALL_EXTRA=OFF
 #
-# For unknown reason, whole binary optimization breaks results.
-# Disable -flto for now, fix it later
-sed -e 's,-flto=auto,,' -i CMakeCache.txt
-
 %cmake_build
 
 
@@ -99,7 +103,7 @@ touch %{buildroot}%{_libdir}/%{name}/etmain/pak{0,1,2}.pk3
 install %{SOURCE1} %{buildroot}%{_datadir}/%{name}/
 install -m 0755 %{SOURCE2} %{buildroot}%{_bindir}/etl-launcher
 install -m 0755 %{SOURCE3} %{buildroot}%{_bindir}/etl-installer
-install misc/etlegacy.service %{buildroot}%{_unitdir}/%{name}.service
+install misc/etlegacy-x86_64.service %{buildroot}%{_unitdir}/%{name}.service
 install %{SOURCE4} %{buildroot}%{_datadir}/applications/com.etlegacy.ETLegacy.installer.desktop
 sed -e 's/^Exec=etl /Exec=etl-launcher /' -i %{buildroot}%{_datadir}/applications/com.etlegacy.ETLegacy.desktop
 
@@ -135,6 +139,12 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/com.etlegacy.E
 %{_datadir}/applications/com.etlegacy.ETLegacy.installer.desktop
 
 %changelog
+* Wed Mar 01 2023 Petr Menšík <pemensik@fedoraproject.org> - 2.81.0-1
+- Update to 2.81.0
+- Address feedback from review rfbz#5824
+- Build with current cjson-devel package
+- Require minizip-ng explicitly for newer releases
+
 * Fri Oct 21 2022 Petr Menšík <pemensik@redhat.com> - 2.80.2-3
 - Address review comment #14 suggestions, use glvnd
 
