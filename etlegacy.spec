@@ -14,7 +14,7 @@
 %global __provides_exclude_from ^%{_libdir}/%{name}/.*\\.so$
 
 Name:           etlegacy
-Version:        2.81.0
+Version:        2.81.1
 Release:        1%{?snapinfo:.%{snapinfo}}%{?dist}
 Summary:        Fully compatible client and server for the game Wolfenstein: Enemy Territory
 
@@ -27,7 +27,6 @@ Source2:        https://raw.githubusercontent.com/pemensik/etlegacy-tools/instal
 Source3:        https://raw.githubusercontent.com/pemensik/etlegacy-tools/installer/linux/etl-installer
 Source4:        com.etlegacy.ETLegacy.installer.desktop
 
-Patch1:         etlegacy-2.81-bin-arch.patch
 # https://github.com/etlegacy/etlegacy/pull/2289
 Patch2:         etlegacy-2.81-cjson-devel.patch
 
@@ -83,8 +82,6 @@ the original game. Can be removed after game data installation.
 # Use system flags for all products
 sed -e 's,^\s*SET(CMAKE_BUILD_TYPE "Release"),# &,' -i cmake/ETLCommon.cmake
 
-mv misc/com.etlegacy.ETLegacy{.x86_64,}.desktop
-
 %build
 %cmake -DBUNDLED_LIBS=OFF -DCROSS_COMPILE32=OFF -DBUILD_MOD=ON \
        -DCLIENT_GLVND=ON \
@@ -103,12 +100,12 @@ touch %{buildroot}%{_libdir}/%{name}/etmain/pak{0,1,2}.pk3
 install %{SOURCE1} %{buildroot}%{_datadir}/%{name}/
 install -m 0755 %{SOURCE2} %{buildroot}%{_bindir}/etl-launcher
 install -m 0755 %{SOURCE3} %{buildroot}%{_bindir}/etl-installer
-install misc/etlegacy-x86_64.service %{buildroot}%{_unitdir}/%{name}.service
+install misc/etlegacy*.service %{buildroot}%{_unitdir}/
 install %{SOURCE4} %{buildroot}%{_datadir}/applications/com.etlegacy.ETLegacy.installer.desktop
-sed -e 's/^Exec=etl /Exec=etl-launcher /' -i %{buildroot}%{_datadir}/applications/com.etlegacy.ETLegacy.desktop
+sed -e 's/^Exec=etl /Exec=etl-launcher /' -i %{buildroot}%{_datadir}/applications/com.etlegacy.ETLegacy*.desktop
 
 %check
-desktop-file-validate %{buildroot}%{_datadir}/applications/com.etlegacy.ETLegacy.desktop
+desktop-file-validate %{buildroot}%{_datadir}/applications/com.etlegacy.ETLegacy*.desktop
 desktop-file-validate %{buildroot}%{_datadir}/applications/com.etlegacy.ETLegacy.installer.desktop
 appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/com.etlegacy.ETLegacy.metainfo.xml
 
@@ -116,13 +113,14 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/com.etlegacy.E
 %files
 %license COPYING.txt
 %doc README.md docs/INSTALL.txt
-%{_bindir}/etl{,ded,-launcher}
+%{_bindir}/etl{,ded}.*
+%{_bindir}/etl-launcher
 %{_mandir}/man6/etl*.6*
 %{_datadir}/icons/hicolor/scalable/apps/etl*
-%{_datadir}/applications/com.etlegacy.ETLegacy.desktop
+%{_datadir}/applications/com.etlegacy.ETLegacy*.desktop
 %{_metainfodir}/com.etlegacy.ETLegacy.metainfo.xml
 %{_datadir}/mime/packages/etlegacy.xml
-%{_unitdir}/%{name}.service
+%{_unitdir}/%{name}*.service
 %{_datadir}/%{name}
 %dir %{_libdir}/%{name}
 %{_libdir}/%{name}/legacy
@@ -139,6 +137,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/com.etlegacy.E
 %{_datadir}/applications/com.etlegacy.ETLegacy.installer.desktop
 
 %changelog
+* Fri Mar 17 2023 Petr Menšík <pemensik@redhat.com> - 2.81.1-1
+- Update to 2.81.1
+
 * Wed Mar 01 2023 Petr Menšík <pemensik@fedoraproject.org> - 2.81.0-1
 - Update to 2.81.0
 - Address feedback from review rfbz#5824
