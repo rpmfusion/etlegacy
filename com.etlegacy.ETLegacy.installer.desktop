@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=ET: Legacy data installer
+GenericName=Enemy Territory: Legacy game data installer
+Comment=World War II first-person shooter data installer
+Icon=etl
+Exec=etl-installer
+Terminal=true
+Categories=Game;ActionGame;
+Keywords=team-based;multiplayer;tactical;WWII;enemy;territory;configuration;
