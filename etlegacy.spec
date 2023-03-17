@@ -102,7 +102,8 @@ install -m 0755 %{SOURCE2} %{buildroot}%{_bindir}/etl-launcher
 install -m 0755 %{SOURCE3} %{buildroot}%{_bindir}/etl-installer
 install misc/etlegacy*.service %{buildroot}%{_unitdir}/
 install %{SOURCE4} %{buildroot}%{_datadir}/applications/com.etlegacy.ETLegacy.installer.desktop
-sed -e 's/^Exec=etl /Exec=etl-launcher /' -i %{buildroot}%{_datadir}/applications/com.etlegacy.ETLegacy*.desktop
+sed -e 's/^Exec=etl\(\.[a-z_0-9]\+\)\?\s/Exec=etl-launcher "\1" /' \
+    -i %{buildroot}%{_datadir}/applications/com.etlegacy.ETLegacy*.desktop
 
 %check
 desktop-file-validate %{buildroot}%{_datadir}/applications/com.etlegacy.ETLegacy*.desktop
