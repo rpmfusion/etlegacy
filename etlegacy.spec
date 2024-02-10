@@ -42,10 +42,10 @@ BuildRequires:  libappstream-glib
 BuildRequires:  systemd-rpm-macros
 BuildRequires:  sed
 BuildRequires:  cjson-devel
-%if 0%{fedora} > 37
-BuildRequires:  minizip-ng-devel
+%if 0%{fedora} > 39
+BuildRequires:  minizip-ng-compat-devel
 %else
-BuildRequires:  minizip-devel
+BuildRequires:  minizip-ng-devel
 %endif
 
 Requires:       shared-mime-info
