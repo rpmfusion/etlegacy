@@ -1,0 +1,26 @@
+From 3b24871a262eae418c6f58df903e8efdd590ed36 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Petr=20Men=C5=A1=C3=ADk?= <pemensik@fedoraproject.org>
+Date: Tue, 27 Feb 2024 21:33:06 +0100
+Subject: [PATCH] Fix PowerPC build where SDL_HasAltiVec is undefined
+
+Use proper includes for SDL definitions, which are needed for PPC
+specific initialization of altivec variable.
+---
+ src/qcommon/common.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/src/qcommon/common.c b/src/qcommon/common.c
+index a26e55bfc..b530a9263 100644
+--- a/src/qcommon/common.c
++++ b/src/qcommon/common.c
+@@ -39,6 +39,7 @@
+ 
+ #ifndef DEDICATED
+ #include "../sys/sys_local.h"
++#include "../sdl/sdl_defs.h"
+ #include "../client/client.h"
+ #endif
+ #include "../server/server.h"
+-- 
+2.43.2
+

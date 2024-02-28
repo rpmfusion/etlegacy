@@ -15,7 +15,7 @@
 
 Name:           etlegacy
 Version:        2.81.1
-Release:        3%{?snapinfo:.%{snapinfo}}%{?dist}
+Release:        4%{?snapinfo:.%{snapinfo}}%{?dist}
 Summary:        Fully compatible client and server for the game Wolfenstein: Enemy Territory
 
 License:        GPLv3
@@ -29,6 +29,8 @@ Source4:        com.etlegacy.ETLegacy.installer.desktop
 
 # https://github.com/etlegacy/etlegacy/pull/2289
 Patch2:         etlegacy-2.81-cjson-devel.patch
+# https://github.com/etlegacy/etlegacy/pull/2492
+Patch3:         etlegacy-2.81-ppc64-altivec.patch
 
 BuildRequires:  gcc gcc-c++
 BuildRequires:  cmake
@@ -138,6 +140,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/com.etlegacy.E
 %{_datadir}/applications/com.etlegacy.ETLegacy.installer.desktop
 
 %changelog
+* Wed Feb 28 2024 Petr Menšík <pemensik@redhat.com> - 2.81.1-4
+- Fix build on powerpc platforms
+
 * Sun Feb 04 2024 RPM Fusion Release Engineering <sergiomb@rpmfusion.org> - 2.81.1-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_40_Mass_Rebuild
 
