@@ -2,9 +2,9 @@
 
 #
 %global gittag v%{version}
-#%%global gitcommit 886f0ef0d6a48b527a25409dbd6eb350e6610e48
+#%%global gitcommit 6f90ecff1ed0e041ddc1f2148d30752f314209a3
 %if 0%{?gitcommit:1}
-%global snapdate 20211102
+%global snapdate 20250324
 %global snapinfo %{snapdate}git%(echo %{gitcommit}| cut -c 1-8)
 %global gitver %{gitcommit}
 %else
@@ -14,8 +14,8 @@
 %global __provides_exclude_from ^%{_libdir}/%{name}/.*\\.so$
 
 Name:           etlegacy
-Version:        2.81.1
-Release:        6%{?snapinfo:.%{snapinfo}}%{?dist}
+Version:        2.83.2
+Release:        0%{?snapinfo:.%{snapinfo}}%{?dist}
 Summary:        Fully compatible client and server for the game Wolfenstein: Enemy Territory
 
 License:        GPLv3
@@ -26,11 +26,6 @@ Source1:        etlegacy-data.html
 Source2:        https://raw.githubusercontent.com/pemensik/etlegacy-tools/installer/linux/etl-launcher
 Source3:        https://raw.githubusercontent.com/pemensik/etlegacy-tools/installer/linux/etl-installer
 Source4:        com.etlegacy.ETLegacy.installer.desktop
-
-# https://github.com/etlegacy/etlegacy/pull/2289
-Patch2:         etlegacy-2.81-cjson-devel.patch
-# https://github.com/etlegacy/etlegacy/pull/2492
-Patch3:         etlegacy-2.81-ppc64-altivec.patch
 
 BuildRequires:  gcc gcc-c++
 BuildRequires:  cmake
@@ -140,6 +135,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/com.etlegacy.E
 %{_datadir}/applications/com.etlegacy.ETLegacy.installer.desktop
 
 %changelog
+* Mon Mar 24 2025 Trung Lê <8@tle.id.au> - 2.83.2-0
+- Update to 2.83.2
+
 * Wed Jan 29 2025 RPM Fusion Release Engineering <sergiomb@rpmfusion.org> - 2.81.1-6
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_42_Mass_Rebuild
 
