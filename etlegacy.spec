@@ -14,8 +14,8 @@
 %global __provides_exclude_from ^%{_libdir}/%{name}/.*\\.so$
 
 Name:           etlegacy
-Version:        2.83.2
-Release:        3%{?snapinfo:.%{snapinfo}}%{?dist}
+Version:        2.84.0
+Release:        1%{?snapinfo:.%{snapinfo}}%{?dist}
 Summary:        Fully compatible client and server for the game Wolfenstein: Enemy Territory
 
 License:        GPLv3
@@ -39,11 +39,7 @@ BuildRequires:  libappstream-glib
 BuildRequires:  systemd-rpm-macros
 BuildRequires:  sed
 BuildRequires:  cjson-devel
-%if 0%{fedora} > 39
 BuildRequires:  minizip-ng-compat-devel
-%else
-BuildRequires:  minizip-ng-devel
-%endif
 
 Requires:       shared-mime-info
 # Can be produced by game-data-packager enemy-territory
@@ -78,6 +74,10 @@ the original game. Can be removed after game data installation.
 
 # Use system flags for all products
 sed -e 's,^\s*SET(CMAKE_BUILD_TYPE "Release"),# &,' -i cmake/ETLCommon.cmake
+
+%if 0%{fedora} > 44
+sed -i 's/find_package(Lua 5.4 EXACT REQUIRED)/find_package(Lua 5.4 REQUIRED)/' cmake/ETLSetupFeatures.cmake
+%endif
 
 %build
 %cmake -DBUNDLED_LIBS=OFF -DCROSS_COMPILE32=OFF -DBUILD_MOD=ON \
@@ -135,6 +135,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/com.etlegacy.E
 %{_datadir}/applications/com.etlegacy.ETLegacy.installer.desktop
 
 %changelog
+* Mon Aug 03 2026 Leigh Scott <leigh123linux@gmail.com> - 2.84.0-1
+- Update to 2.84.0
+
 * Sun Aug 02 2026 RPM Fusion Release Engineering <leigh123linux@rpmfusion.org> - 2.83.2-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_45_Mass_Rebuild
 
