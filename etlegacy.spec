@@ -14,7 +14,7 @@
 %global __provides_exclude_from ^%{_libdir}/%{name}/.*\\.so$
 
 Name:           etlegacy
-Version:        2.84.0
+Version:        2.86.2
 Release:        1%{?snapinfo:.%{snapinfo}}%{?dist}
 Summary:        Fully compatible client and server for the game Wolfenstein: Enemy Territory
 
@@ -135,6 +135,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/com.etlegacy.E
 %{_datadir}/applications/com.etlegacy.ETLegacy.installer.desktop
 
 %changelog
+* Thu Nov 12 2026 Trung Lê <8@tle.id.au> - 2.86.2-1
+- Update to 2.86.2
+
 * Mon Aug 03 2026 Leigh Scott <leigh123linux@gmail.com> - 2.84.0-1
 - Update to 2.84.0
 
