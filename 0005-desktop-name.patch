@@ -1,0 +1,13 @@
+Name the launcher just ET: Legacy. Upstream adds the architecture so several
+builds can be installed side by side, but the package installs only one.
+
+--- a/misc/com.etlegacy.ETLegacy.desktop.in
++++ b/misc/com.etlegacy.ETLegacy.desktop.in
+@@ -1,6 +1,6 @@
+ [Desktop Entry]
+ Type=Application
+-Name=ET: Legacy @BIN_DESCRIBE@
++Name=ET: Legacy
+ GenericName=World War II first-person shooter
+ Comment=World War II first-person shooter
+ Icon=etl
