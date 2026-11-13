@@ -1,0 +1,117 @@
+From f04f9c7e48dfbe80fcb4658e33af27d2a2a05b64 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Trung=20L=C3=AA?= <8@tle.id.au>
+Date: Fri, 13 Nov 2026 23:01:18 +1100
+Subject: [PATCH] client: reference the mod pak for cgame and ui from other
+ platforms
+
+Pure servers check that the client's cgame and ui came from the same pak as
+their own. On a platform the mod pak has no libraries for, such as ppc64le, the
+client loads its own cgame and ui from disk instead and references no pak, so
+every pure server drops it as unpure.
+
+Mod paks carry the libraries of all platforms together, so when the library
+for this platform can't be extracted, reference the pure mod pak that holds the
+other platforms' libraries of the module instead.
+---
+ src/qcommon/files.c   | 58 +++++++++++++++++++++++++++++++++++++++++++
+ src/qcommon/qcommon.h |  1 +
+ src/sys/sys_main.c    |  2 ++
+ 3 files changed, 61 insertions(+)
+
+diff --git a/src/qcommon/files.c b/src/qcommon/files.c
+index 6c506780e..55d04cd69 100644
+--- a/src/qcommon/files.c
++++ b/src/qcommon/files.c
+@@ -2045,6 +2045,64 @@ qboolean FS_CL_ExtractFromPakFile(const char *base, const char *gamedir, const c
+ 	FS_FreeFile(srcData);
+ 	return qtrue;
+ }
++
++/**
++ * @brief References the pure pak with the other platforms' libraries of a module
++ *
++ * @details Pure servers check that the client's cgame and ui came from the same pak
++ * as their own. A client on a platform the mod pak has no library for loads its own
++ * from disk instead and so references no pak, which gets it kicked as unpure. Mod paks
++ * carry the libraries of all platforms together, so the pak with the libraries of the
++ * other platforms is the one the server expects.
++ *
++ * @param[in] module cgame or ui
++ */
++void FS_CL_ReferenceModulePak(const char *module)
++{
++	searchpath_t *search;
++	size_t       len    = strlen(module);
++	size_t       dirLen = strlen(fs_gamedir);
++	int          flag, i;
++
++	if (!Q_stricmp(module, "cgame"))
++	{
++		flag = FS_CGAME_REF;
++	}
++	else if (!Q_stricmp(module, "ui"))
++	{
++		flag = FS_UI_REF;
++	}
++	else
++	{
++		return;
++	}
++
++	for (search = fs_searchpaths; search; search = search->next)
++	{
++		pack_t *pak = search->pack;
++
++		// paks of the mod, downloaded ones are in its dlcache
++		if (!pak || !FS_PakIsPure(pak) || Q_stricmpn(pak->pakGamename, fs_gamedir, dirLen) ||
++		    (pak->pakGamename[dirLen] != '\0' && pak->pakGamename[dirLen] != '/'))
++		{
++			continue;
++		}
++
++		for (i = 0; i < pak->numfiles; i++)
++		{
++			const char *name = pak->buildBuffer[i].name;
++
++			// cgame.mp.x86_64.so, cgame_mp_x64.dll, cgame_mac
++			if (!Q_stricmpn(name, module, len) &&
++			    (!Q_stricmpn(name + len, ".mp.", 4) || !Q_stricmpn(name + len, "_mp_", 4) || !Q_stricmp(name + len, "_mac")))
++			{
++				Com_Printf("FS_CL_ReferenceModulePak: no %s library for this platform, referencing %s\n", module, pak->pakBasename);
++				pak->referenced |= flag;
++				return;
++			}
++		}
++	}
++}
+ #endif
+ 
+ /**
+diff --git a/src/qcommon/qcommon.h b/src/qcommon/qcommon.h
+index 370d7ab08..9034ce09e 100644
+--- a/src/qcommon/qcommon.h
++++ b/src/qcommon/qcommon.h
+@@ -978,6 +978,7 @@ void FS_FilenameCompletion(const char *dir, int numext, const char **ext,
+ #if !defined(DEDICATED)
+ extern int cl_connectedToPureServer;
+ qboolean FS_CL_ExtractFromPakFile(const char *base, const char *gamedir, const char *fileName);
++void FS_CL_ReferenceModulePak(const char *module);
+ #endif
+ 
+ void FS_CopyFile(const char *fromOSPath, const char *toOSPath);
+diff --git a/src/sys/sys_main.c b/src/sys/sys_main.c
+index ed0bfe747..8d6f6e1f9 100644
+--- a/src/sys/sys_main.c
++++ b/src/sys/sys_main.c
+@@ -939,6 +939,8 @@ void *Sys_LoadGameDll(const char *name, qboolean extract,
+ 		{
+ 			// no drama, we still check SEARCHPATH2
+ 			Com_Printf("Sys_LoadDll(%s/%s) failed to extract library from fs_homepath\n", gamedir, name);
++			// but tell pure servers which pak our library stands in for
++			FS_CL_ReferenceModulePak(name);
+ 		}
+ 		else
+ 		{
+-- 
+2.50.1 (Apple Git-155)
+

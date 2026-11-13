@@ -37,6 +37,9 @@ Patch2:         0002-snd-altivec.patch
 # Name the architecture in the version string on platforms other than x86_64
 # and aarch64 (linux-ppc64le instead of linux-other)
 Patch3:         0003-linux-cpustring.patch
+# Let clients on platforms the official mod pak has no cgame and ui for, such as
+# ppc64le, join pure servers instead of being kicked as unpure
+Patch4:         0004-pure-foreign-libs.patch
 
 BuildRequires:  gcc gcc-c++
 BuildRequires:  cmake
@@ -158,6 +161,8 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/com.etlegacy.E
 - Fix the AltiVec sound mixer. Will try to upstream this patch
 - Show the architecture in the version string on platforms other than
   x86_64 and aarch64, such as ppc64le, instead of linux-other
+- Fix joining pure servers on platforms the official mod pak has no cgame
+  and ui for, such as ppc64le
 
 * Thu Nov 12 2026 Trung Lê <8@tle.id.au> - 2.86.2-1
 - Update to 2.86.2
