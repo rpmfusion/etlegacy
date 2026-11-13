@@ -15,7 +15,7 @@
 
 Name:           etlegacy
 Version:        2.86.2
-Release:        1%{?snapinfo:.%{snapinfo}}%{?dist}
+Release:        2%{?snapinfo:.%{snapinfo}}%{?dist}
 Summary:        Fully compatible client and server for the game Wolfenstein: Enemy Territory
 
 License:        GPLv3
@@ -83,6 +83,12 @@ sed -i 's/find_package(Lua 5.4 EXACT REQUIRED)/find_package(Lua 5.4 REQUIRED)/' 
 %endif
 
 %build
+%if ! 0%{?gitcommit:1}
+# The tarball has no .git, so tell the build which release it is. Without this
+# the version is "2.86-dirty" and the mod pk3 is legacy_2.86-dirty.pk3
+export CI_ETL_DESCRIBE=%{gittag}
+export CI_ETL_TAG=%{gittag}
+%endif
 %cmake -DBUNDLED_LIBS=OFF -DCROSS_COMPILE32=OFF -DBUILD_MOD=ON \
        -DCLIENT_GLVND=ON \
        -DFEATURE_RENDERER2=OFF -DINSTALL_DEFAULT_BASEDIR=%{_libdir}/%{name} \
@@ -138,6 +144,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/com.etlegacy.E
 %{_datadir}/applications/com.etlegacy.ETLegacy.installer.desktop
 
 %changelog
+* Fri Nov 13 2026 Trung Lê <8@tle.id.au> - 2.86.2-2
+- Report the release version instead of 2.86-dirty
+
 * Thu Nov 12 2026 Trung Lê <8@tle.id.au> - 2.86.2-1
 - Update to 2.86.2
 - Fix duplicate ui/version_generated.h in the mod pk3 (upstream 84d2460)
