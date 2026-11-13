@@ -52,6 +52,20 @@ start_installer() {
 
 for PAK in etmain/pak{0,1,2}.pk3
 do
+	# etl-installer links the paks into the system base path, where the game
+	# finds them already. A second link in $ETHOME loads them twice and
+	# hosting a game then fails with a corrupt/duplicate official pak error.
+	SYSPAK=
+	for DIR in /usr/lib64/etlegacy /usr/lib/etlegacy
+	do
+		[ -e "$DIR/$PAK" ] && SYSPAK=Y
+	done
+	if [ -n "$SYSPAK" ]; then
+		FOUNDPAK=Y
+		[ -L "$ETHOME/$PAK" ] && rm "$ETHOME/$PAK"
+		continue
+	fi
+
 	if ! [ -f "$ETHOME/$PAK" ]; then
 		[ -L "$ETHOME/$PAK" ] && rm "$ETHOME/$PAK"
 		for DIR in /usr{,/local}{,/games}/enemy-territory/ $ETHOME
@@ -70,7 +84,7 @@ done
 
 if [ -z "$FOUNDPAK" ]; then
 	echo "pak[012].pk3 data not found!"
-	if [ -x "$INSTALLER"]; then
+	if [ -x "$INSTALLER" ]; then
 		start_installer && start_game "$@"
 		# Would terminate here on success
 	fi

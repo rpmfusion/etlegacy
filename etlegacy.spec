@@ -26,6 +26,9 @@ Source1:        etlegacy-data.html
 Source2:        https://raw.githubusercontent.com/pemensik/etlegacy-tools/installer/linux/etl-launcher
 Source3:        https://raw.githubusercontent.com/pemensik/etlegacy-tools/installer/linux/etl-installer
 Source4:        com.etlegacy.ETLegacy.installer.desktop
+# Upstream fix, not in a release yet: ui/version_generated.h was packed twice
+# into the mod pk3, https://github.com/etlegacy/etlegacy/commit/84d246001ac09d6bcfcde4c6f7b44c76d7c609ea
+Patch0:         etlegacy-2.86.2-duplicate-version-header.patch
 
 BuildRequires:  gcc gcc-c++
 BuildRequires:  cmake
@@ -137,6 +140,7 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/com.etlegacy.E
 %changelog
 * Thu Nov 12 2026 Trung Lê <8@tle.id.au> - 2.86.2-1
 - Update to 2.86.2
+- Fix duplicate ui/version_generated.h in the mod pk3 (upstream 84d2460)
 
 * Mon Aug 03 2026 Leigh Scott <leigh123linux@gmail.com> - 2.84.0-1
 - Update to 2.84.0
