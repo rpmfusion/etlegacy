@@ -28,12 +28,12 @@ Source3:        https://raw.githubusercontent.com/pemensik/etlegacy-tools/instal
 Source4:        com.etlegacy.ETLegacy.installer.desktop
 # Upstream fix, not in a release yet: ui/version_generated.h was packed twice
 # into the mod pk3, https://github.com/etlegacy/etlegacy/commit/84d246001ac09d6bcfcde4c6f7b44c76d7c609ea
-Patch0:         etlegacy-2.86.2-duplicate-version-header.patch
+Patch0:         0000-duplicate-version-header.patch
 # Match the game window to its desktop file, so it gets the ET: Legacy icon
-Patch1:         etlegacy-2.86.2-desktop-wmclass.patch
+Patch1:         0001-desktop-wmclass.patch
 # Fix the AltiVec sound mixer on VSX (POWER8 and later), stereo and loud sounds,
 # not upstream yet: https://github.com/runlevel5/etlegacy/commit/71c579daeb70cc72ca97a5add498bb45d64de232
-Patch2:         etlegacy-2.86.2-snd-altivec.patch
+Patch2:         0002-snd-altivec.patch
 # Name the architecture in the version string on platforms other than x86_64
 # and aarch64 (linux-ppc64le instead of linux-other)
 Patch3:         0003-linux-cpustring.patch
