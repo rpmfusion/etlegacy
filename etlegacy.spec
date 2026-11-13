@@ -34,6 +34,9 @@ Patch1:         etlegacy-2.86.2-desktop-wmclass.patch
 # Fix the AltiVec sound mixer on VSX (POWER8 and later), stereo and loud sounds,
 # not upstream yet: https://github.com/runlevel5/etlegacy/commit/71c579daeb70cc72ca97a5add498bb45d64de232
 Patch2:         etlegacy-2.86.2-snd-altivec.patch
+# Name the architecture in the version string on platforms other than x86_64
+# and aarch64 (linux-ppc64le instead of linux-other)
+Patch3:         0003-linux-cpustring.patch
 
 BuildRequires:  gcc gcc-c++
 BuildRequires:  cmake
@@ -153,6 +156,8 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/com.etlegacy.E
 - Report the release version instead of 2.86-dirty
 - Show the ET: Legacy icon and name for the game window
 - Fix the AltiVec sound mixer. Will try to upstream this patch
+- Show the architecture in the version string on platforms other than
+  x86_64 and aarch64, such as ppc64le, instead of linux-other
 
 * Thu Nov 12 2026 Trung Lê <8@tle.id.au> - 2.86.2-1
 - Update to 2.86.2
