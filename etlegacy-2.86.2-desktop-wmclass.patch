@@ -1,0 +1,14 @@
+Let desktops match the game window to its desktop file. SDL names the window
+after the executable (etl.ppc64le), which differs from the desktop file ID, so
+GNOME showed a generic icon labelled etl.ppc64le.
+
+--- a/misc/com.etlegacy.ETLegacy.desktop.in
++++ b/misc/com.etlegacy.ETLegacy.desktop.in
+@@ -6,6 +6,7 @@
+ Icon=etl
+ Exec=etl@BIN_SUFFIX@ +connect %u
+ Terminal=false
++StartupWMClass=etl@BIN_SUFFIX@
+ MimeType=x-scheme-handler/et;
+ Categories=Game;ActionGame;
+ StartupNotify=false
